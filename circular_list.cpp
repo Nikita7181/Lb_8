@@ -422,5 +422,7 @@ int main ()
     std::cout << "Ger last: " << my_test_list2-> GetLast() -> GetInfo() << std::endl;
     my_test_list->GetListElementAtIndex(6)->PrintInfo();
     std::cout << "Size: " << my_test_list2->GetCount() << std::endl;
+    delete my_test_list;
+    delete my_test_list2;
     return 0;
 }
