@@ -125,7 +125,7 @@ struct My_list // орисание самого списка
     
     My_list_element <ListType> * getLast ()// Функция получения последнего элемента
     {
-        return this->getByIndex(this-> getCount() );
+        return this->getByIndex( getCount ());
     }
     
     
@@ -179,26 +179,32 @@ int main ()
         cin >> element;
     my_test_list -> addLast(element);
     }
-    cout << "Enter a value: ";
-    cin >> element;
-    cout << "index: " << my_test_list->searchByValue(element) << endl;
-    cout << "Get the value by index" << endl;
-    my_test_list->getByIndex(5);
+    std::cout << "Search by Value" << std::endl;
+    std::cout << "Enter a value : ";
+    int value = 0;
+    std::cin>>value;
+    int position = my_test_list->searchByValue (value);
+    if (position != -1) {
+        std::cout << "first position with value " << value << " at index " << position << std::endl;
+    }
+    else
+    {
+        std::cout << "value not found" << std::endl;
+    }
     cout << "Value from the beginning: ";
-    my_test_list -> getFirst();
+    my_test_list -> getFirst()-> PrintInfo();
     cout << endl;
-    my_test_list-> PrintList();
+    //cout << "Value from the end: ";
+    //my_test_list -> getByIndex(my_test_list->getCount()) -> PrintInfo();
+    //cout << endl;
+    my_test_list -> PrintList();
     cout << "Add an item to the top of the list: ";
     cin >> element;
     my_test_list->addFirst(element);
-    cout <<"Adding a value by index";
+    cout <<"Adding a value by index (4)" << endl;
     my_test_list->addAtIndex(10, 4);
     cout << "Get the value by index" << endl;
-    my_test_list->getByIndex(5);
-    cout << "search for the position of the first element equal in value to the desired one" << endl;
-    cout << endl;
-    cout << "Value from the end: ";
-    my_test_list -> getLast();
+    my_test_list->getByIndex(5) -> PrintInfo();
     cout << endl;
     cout << "Size: " << my_test_list->getCount() << endl;
     my_test_list->PrintList();
@@ -218,20 +224,18 @@ int main ()
     mt2.MM = 17;
     mt2.SS = 18;
     
-    //cout << mt1 << endl;
-    
-    My_list <my_time, 5> * my_time_list = new My_list <my_time, 5>;
+    My_list <my_time, 10> * my_time_list = new My_list <my_time, 10>;
     my_time_list->addLast(mt1);
     my_time_list->addFirst(mt2);
-    cout << "Get the value by index" << endl;
-    my_test_list->getByIndex(1);
-    my_time_list->addAtIndex(mt1,3);
     cout << "Value from the beginning: ";
-    my_time_list->getFirst();
+    my_time_list -> getFirst()-> PrintInfo();
     cout << endl;
-    cout << "Value from the end: ";
-    my_time_list->getLast();
-    cout << endl;
+  // cout << "Value from the end: ";
+   //my_time_list -> getByIndex(0) -> PrintInfo();
+   //cout << endl;
+    cout << "Get the value by index : " ;
+    my_time_list->getByIndex(1) -> PrintInfo();
+    my_time_list->addAtIndex(mt1,3);
     my_time_list->PrintList();
     cout << "Size: " << my_time_list->getCount() << endl;
    my_time_list->destructor();
