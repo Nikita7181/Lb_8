@@ -233,11 +233,15 @@ int main ()
   // cout << "Value from the end: ";
    //my_time_list -> getByIndex(0) -> PrintInfo();
    //cout << endl;
+    std::cout << "Search by Value" << std::endl;
+    std::cout << "Enter a value : ";
     cout << "Get the value by index : " ;
     my_time_list->getByIndex(1) -> PrintInfo();
     my_time_list->addAtIndex(mt1,3);
     my_time_list->PrintList();
     cout << "Size: " << my_time_list->getCount() << endl;
    my_time_list->destructor();
+   delete  my_time_list;
+   delete my_test_list;
     return 0;
 }
