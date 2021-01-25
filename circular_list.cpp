@@ -27,21 +27,14 @@ public:
     
     My_list_element () // конструктор, обнуляем переменные
     {
-        this->next = NULL; //все таки оно NULL а не null
-        this->prev = NULL;
+        this->next = nullptr;
+        this->prev = nullptr;
         this->index = 0;
     }
     
     My_list_element (InfoType info) : My_list_element () //наследование, у нас же тут ооп
     {
         this->SetInfo (info);
-    }
-    
-    ~My_list_element (){
-        this->next = NULL;
-        this->prev = NULL;
-        this->index = 0;
-        std::cout << "My_list_element destructor";
     }
     
     void SetNext(My_list_element * next)
@@ -72,16 +65,6 @@ public:
         return this->index;
     }
     
-    void PrintNextInfo()
-    {
-        std::cout << "next info value = " << this->GetNext()->GetInfo() << std::endl;
-    }
-    
-    void PrintPrevInfo()
-    {
-        std::cout << "prev info value = " << this->GetPrev()->GetInfo() << std::endl;
-    }
-    
 };
 
 template <typename ListType>
@@ -95,10 +78,22 @@ public:
     
     My_list ()
     {
-        first = NULL;
-        curent = NULL;
+        first = nullptr;
+        curent = nullptr;
         count = 0;
         maxIndex = 0;
+    }
+    
+    ~My_list ()
+    {
+        My_list_element<ListType> *temp;
+        curent = GetLast();
+
+        while (first != curent)
+        {
+            curent=curent->GetPrev();
+            delete curent->GetNext();
+        }
     }
     
     int GetCount() {return this->count;}
@@ -106,7 +101,7 @@ public:
     void add (ListType value)
     {
         My_list_element <ListType> * element = new My_list_element <ListType> (value);
-        if (first == NULL)
+        if (first == nullptr)
         {
             first = curent = element;
             first->SetNext(first);
@@ -115,7 +110,7 @@ public:
             this->count=1;
             maxIndex++;
         }
-        else //( first == curent )
+        else
         {
             My_list_element <ListType> * old = curent;
             curent = element;
@@ -131,7 +126,7 @@ public:
     void addFirst (ListType value)
     {
         My_list_element <ListType> * element = new My_list_element <ListType> (value);
-        if (first == NULL)
+        if (first == nullptr)
         {
             first = curent = element;
             first->SetNext(first);
@@ -140,10 +135,9 @@ public:
             this->count=1;
             maxIndex++;
         }
-        else //( first == curent )
+        else
         {
             My_list_element <ListType> * old = first;
-            //curent = element;
             
             first = element;
             first->SetNext(old);
@@ -151,7 +145,6 @@ public:
             
             old->GetPrev()->SetNext(first);
             old->SetPrev(first);
-            //old->
             first->SetIndex(0);
             this->maxIndex++;
             this->count++;
@@ -169,7 +162,7 @@ public:
     void addAtIndex (ListType value, int index)
     {
         My_list_element <ListType> * element = new My_list_element <ListType> (value);
-        if (first == NULL)
+        if (first == nullptr)
         {
             first = curent = element;
             first->SetNext(first);
@@ -178,7 +171,7 @@ public:
             this->count=1;
             maxIndex++;
         }
-        else //( first == curent )
+        else
         {
             curent = first;
             if ((index < 0)||(index>maxIndex)) {return;}
@@ -189,7 +182,6 @@ public:
             }
             
             My_list_element <ListType> * old = curent;
-            //curent = element;
             
             curent = element;
             curent->SetNext(old);
@@ -211,71 +203,85 @@ public:
         }
         
     }
+
+    void addAtPointer (ListType value, My_list_element <ListType> * pntr)
+    {
+        //My_list_element <ListType> * element = new My_list_element <ListType> (value);
+        
+        if (!first) {return;}
+
+        curent = first;
+        do
+        {
+            if (curent == pntr) {break;};
+            curent=curent->GetNext();
+        } while (curent != first) ;
+        
+        int indx = curent->GetIndex();
+        addAtIndex(value, indx+1);
+    }
     
     void printList ()
     {
         std::cout << "List: " << std::endl;
         curent = first;
-        if ((first == NULL) || ( curent == NULL) ) {return;};
+        if ((first == nullptr) || ( curent == nullptr) ) {return;}
         
-        while (true)
+
+        //curent->PrintInfo();
+        //while (curent->GetNext()->GetIndex() != 0)
+        do
         {
             
             curent->PrintInfo();
-            //curent->PrintPrevInfo();
-            //curent->PrintNextInfo();
-            //std::cout << "-----------------------------" << std::endl;
-            if (curent->GetNext()->GetIndex() == 0) {break;}
+            //if (curent->GetNext()->GetIndex() == 0) {break;}
             curent = curent->GetNext();
-        };
+        }while (curent->GetIndex() != 0);
     }
     
     My_list_element <ListType> * GetFirst(){
         return this->first;
     }
     
-    void printFirstInfo ()
-    {
-        std::cout << "first element: " << this->GetFirst()->GetInfo() ;
-    }
-    
     My_list_element <ListType> * GetLast(){
         return this->first->GetPrev();
-    }
-    
-    void printLastInfo ()
-    {
-        std::cout << "first element: " << this->GetLast()->GetInfo() << std::endl;
     }
     
     My_list_element <ListType> * GetListElementAtIndex(int index)
     {
         curent = first;
-        if ((first == NULL) || ( curent == NULL) || index < 0 || index > this->count) {return NULL;};
+        if ((first == nullptr) || ( curent == nullptr) || index < 0 || index > this->count) {return nullptr;}
         while (true)
         {
             if (curent->GetIndex() == index) {return curent;}
             curent = curent->GetNext();
         }
-        return NULL;
-    }
-    
-    void printListElementAtIndex(int index)
-    {
-        std::cout << "Element at index " << index << " = " << this->GetLast()->GetInfo() << std::endl;
     }
     
     void deleteAtIndex(int index)
     {
         curent = this->GetListElementAtIndex(index);
         
-        if (curent == NULL) {return;}
+        if (curent == nullptr) {return;}
         My_list_element <ListType> * next = curent->GetNext();
         
         curent->GetNext()->SetPrev(curent->GetPrev());
         curent->GetPrev()->SetNext(curent->GetNext());
         
-        while (true)
+        if (index == 0)
+        {
+            first = curent->GetNext();
+            curent = curent->GetNext();
+        }
+        
+        while (curent->GetIndex() != 0)
+        {
+            
+            curent->SetIndex(curent->GetIndex() - 1);
+            curent = curent->GetNext();
+
+        }
+        /*while (true)
         {
             if (next->GetIndex() != 0)
             {
@@ -288,9 +294,25 @@ public:
                 curent = first;
                 break;
             }
-        }
+        }*/
+
         this->count--;
         this->maxIndex--;
+    }
+
+    void deleteAtPointer ( My_list_element <ListType> * pntr)
+    {
+        if (!first) {return;}
+
+        curent = first;
+        do
+        {
+            if (curent == pntr) {break;};
+            curent=curent->GetNext();
+        } while (curent != first) ;
+        
+        int indx = curent->GetIndex();
+        deleteAtIndex(indx);
     }
     
     int SearchByValue (ListType value)
@@ -312,6 +334,27 @@ public:
         }
         
     }
+    
+    void pop_last()
+    {
+        std::cout << "Last index: " << GetLast() ->GetIndex()<< " " << "Last Info: " << GetLast() ->GetInfo() << std::endl;
+        My_list_element <ListType> * tmp = GetLast();
+        int indx = tmp->GetIndex();
+        deleteAtIndex(indx);
+    }
+    
+    void pop_first()
+    {
+        std::cout << "First index: " <<GetFirst() ->GetIndex() << " " << "First Info: " << GetFirst() ->GetInfo() << std::endl;
+        My_list_element <ListType> * tmp = GetFirst();
+        int indx = tmp->GetIndex();
+        deleteAtIndex(indx);
+    }
+
+    void operator delete(void * ptr)
+    {
+        free(ptr);
+    }
 };
 
 
@@ -323,18 +366,16 @@ public:
     my2Dvector (double x, double y) {this->x=x;this->y=y;}
     ~my2Dvector() {x=0;y=0;}
     
-    
-    
-    /* std::string to_string (const my2Dvector vec)
-     {
-         std::ostringstream strm;
-         strm << "(" << vec->x << ", " << vec->y << ")";
-         return stream.str();
-     } */
-    
     bool operator==(const my2Dvector & mv)
     {
-        if ((this->x == mv.x) && (this->y == mv.y)) { return true;};
+        if ((this->x == mv.x) && (this->y == mv.y)) { return true;}
+        
+        return false;
+    }
+    
+    bool operator!=(const my2Dvector & mv)
+    {
+        if ((this->x != mv.x) && (this->y != mv.y)) { return true;}
         
         return false;
     }
@@ -352,21 +393,22 @@ std::ostream & operator<< (std::ostream& os, const my2Dvector& vctr)
 
 int main ()
 {
-    
     My_list <int> * my_test_list = new My_list <int> ();
     for (int i = 0; i < 10; i++)
     {
         my_test_list->add(i);
+        //std::cout << "Size: " << my_test_list->GetCount () << std::endl;
     }
     my_test_list->printList();
     std::cout << std::endl;
     std::cout << "Search by index(6): ";
     my_test_list->GetListElementAtIndex(6)->PrintInfo();
-    std::cout << "delete at inde(0) :" << std::endl;
+    std::cout << "delete at index(0) :" << std::endl;
     my_test_list->deleteAtIndex(0);
+    //std::cout << "Size: " << my_test_list->GetCount () << std::endl;
     my_test_list->printList();
     std::cout << "Get element at index (5): ";
-     my_test_list->GetListElementAtIndex(5)->PrintInfo();
+    my_test_list->GetListElementAtIndex(5)->PrintInfo();
     std::cout << "Search by Value" << std::endl;
     std::cout << "Enter a value : ";
     int value = 0;
@@ -379,14 +421,24 @@ int main ()
     {
         std::cout << "value not found" << std::endl;
     }
-    std::cout << "Ger first: " << my_test_list-> GetFirst() -> GetInfo() << std::endl;
-    std::cout << "Ger last: " << my_test_list-> GetLast() -> GetInfo() << std::endl;
+    my_test_list->pop_last();
+    my_test_list->printList();
+    my_test_list->pop_first();
+    my_test_list->printList();
     int new_fisrt = 100;// добавление первого элемента
     my_test_list->addFirst(new_fisrt);
     my_test_list->printList();
-    my_test_list->addAtIndex(new_fisrt, 5);// удаление по индексу
+    my_test_list->addAtIndex(new_fisrt, 5);// добавление по индексу
     my_test_list->printList();
     std::cout << "Size: " << my_test_list->GetCount () << std::endl;
+
+    my_test_list->addAtPointer(777, my_test_list->GetFirst()->GetNext()); //добавим 777 после 2
+    my_test_list->printList();
+
+    my_test_list->deleteAtPointer(my_test_list->GetFirst()->GetNext()); //удалим 2
+    my_test_list->printList();
+
+    delete my_test_list;
     // проверка пользовательского типа
     std::cout << "--------------------------------------------" << std::endl << std::endl;
     My_list <my2Dvector> * my_test_list2 = new My_list <my2Dvector>;
@@ -418,11 +470,13 @@ int main ()
     my_test_list2 -> addAtIndex(vec1, 6);
     my_test_list2 -> printList();
     std::cout << std::endl;
-    std::cout << "Ger first: " << my_test_list2-> GetFirst() -> GetInfo() << std::endl;
-    std::cout << "Ger last: " << my_test_list2-> GetLast() -> GetInfo() << std::endl;
-    my_test_list->GetListElementAtIndex(6)->PrintInfo();
+    my_test_list2->pop_last();
+    my_test_list2->printList();
+    my_test_list2->pop_first();
+    my_test_list2->printList();
+    my_test_list2->GetListElementAtIndex(6)->PrintInfo();
     std::cout << "Size: " << my_test_list2->GetCount() << std::endl;
-    delete my_test_list;
+    
     delete my_test_list2;
     return 0;
 }
